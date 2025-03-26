@@ -17,10 +17,7 @@ A simple application for **retrieval-augmented generation (RAG)**.
 2. Install dependencies:
    ```bash
    poetry add
-   ```
-3. Navigate to the project directory:
-   ```bash
-   cd app
+   poetry install
    ```
 
 ## Usage
@@ -28,7 +25,7 @@ A simple application for **retrieval-augmented generation (RAG)**.
 Run the application:
 
 ```bash
-poetry run
+poetry run dev
 ```
 
 ## License

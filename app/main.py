@@ -5,12 +5,14 @@ import uvicorn
 
 app = FastAPI()
 DATA_DIR = "data"
+CHROMA_DIR = "chroma"
 os.makedirs(DATA_DIR, exist_ok=True)
-
+os.makedirs(CHROMA_DIR, exist_ok=True)
 
 @app.get("/")
 async def read_root():
-    return {"message": "Welcome to the FastAPI RAG app!"}
+    key = os.environ['OPENAI_API_KEY']
+    return {"api-key": key}
 
 @app.post("/upload/")
 async def upload_file(file: UploadFile = File()):
