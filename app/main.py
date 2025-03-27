@@ -7,7 +7,7 @@ import openai
 from pydantic import BaseModel
 from contextlib import asynccontextmanager
 from app.db import setup_chroma, save_to_chroma, query_chroma
-from app.processing import load_documents, split_text, build_prompt, ask_gpt
+from app.processing import load_documents, split_text, build_prompt, ask_gpt, get_history
 
 DATA_DIR = "data"
 CHROMA_DIR = "chroma"
@@ -33,6 +33,7 @@ async def read_root():
 
 
 class ChatRequest(BaseModel):
+    chat_name: str
     query: str
 
 @app.post("/chat/")
@@ -42,16 +43,16 @@ async def chat(request: ChatRequest):
         context_docs = query_chroma(request.query)
         print(f"📚 Retrieved {len(context_docs)} context docs from Chroma.")
         prompt = build_prompt(request.query, context_docs)
-        answer = ask_gpt(prompt)
+        answer = ask_gpt(request.chat_name, prompt)
         print(f"prompt generated: {prompt}")
         citations = [
             {
                 "source": doc.metadata.get("source", "unknown"),
-                "snippet": doc.page_content[:200] + "…" if len(doc.page_content) > 200 else doc.page_content
+                "snippet": doc.page_content[:50] + "…" if len(doc.page_content) > 50 else doc.page_content
             }
             for doc in context_docs
         ]
-        return {"query": request.query, "response": answer, "citations": citations}
+        return {"query": request.query, "response": answer, "citations": citations, "history": get_history(request.chat_name)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Chat failed: {e}")
 

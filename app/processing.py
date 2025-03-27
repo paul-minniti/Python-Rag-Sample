@@ -2,6 +2,13 @@ from langchain_community.document_loaders import DirectoryLoader, TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.schema import Document
 import openai
+from collections import defaultdict
+
+chat_history = defaultdict(list)
+
+
+def get_history(chat_name: str) -> list[dict]:
+    return chat_history[chat_name]
 
 
 def load_documents(data_dir: str, file_name: str):
@@ -33,12 +40,15 @@ def build_prompt(query: str, context_docs: list):
     return prompt
 
 
-def ask_gpt(prompt: str, model: str = "gpt-4o"):
+def ask_gpt(chat_name: str, prompt: str, model: str = "gpt-4o"):
+    history = get_history(chat_name)
+    history.append({"role": "user", "content": prompt})
     response = openai.chat.completions.create(
         model=model,
         messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": prompt}
-        ]
+            {"role": "system", "content": "You are a helpful assistant."}
+        ] + history
     )
-    return response.choices[0].message.content.strip()
+    answer = response.choices[0].message.content.strip()
+    history.append({"role": "assistant", "content": answer})
+    return answer
