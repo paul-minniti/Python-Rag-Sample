@@ -1,7 +1,7 @@
 from chromadb import PersistentClient
 from langchain_openai import OpenAIEmbeddings
-from langchain_community.vectorstores import Chroma
 from langchain.schema import Document
+from langchain_chroma import Chroma
 
 chroma_client = PersistentClient(path="../chroma")
 

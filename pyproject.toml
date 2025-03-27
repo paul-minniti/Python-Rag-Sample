@@ -23,6 +23,7 @@ dependencies = [
 [tool.poetry.dependencies]
 python = ">=3.12,<4.0"
 # chroma = ">=0.6.3" installed with pip
+# langchain-chroma = ">0.2.2" installed with pip
 
 
 [tool.poetry]

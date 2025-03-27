@@ -43,7 +43,8 @@ async def chat(request: ChatRequest):
         print(f"📚 Retrieved {len(context_docs)} context docs from Chroma.")
         prompt = build_prompt(request.query, context_docs)
         answer = ask_gpt(prompt)
-        return {"query": request.query, "prompt": prompt, "response": answer}
+        print(f"prompt generated: {prompt}")
+        return {"query": request.query, "response": answer}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Chat failed: {e}")
 
