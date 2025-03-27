@@ -44,7 +44,14 @@ async def chat(request: ChatRequest):
         prompt = build_prompt(request.query, context_docs)
         answer = ask_gpt(prompt)
         print(f"prompt generated: {prompt}")
-        return {"query": request.query, "response": answer}
+        citations = [
+            {
+                "source": doc.metadata.get("source", "unknown"),
+                "snippet": doc.page_content[:200] + "…" if len(doc.page_content) > 200 else doc.page_content
+            }
+            for doc in context_docs
+        ]
+        return {"query": request.query, "response": answer, "citations": citations}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Chat failed: {e}")
 
