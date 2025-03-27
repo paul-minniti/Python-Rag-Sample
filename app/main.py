@@ -4,9 +4,10 @@ import shutil
 import uvicorn
 from dotenv import load_dotenv
 import openai 
+from pydantic import BaseModel
 from contextlib import asynccontextmanager
-from app.db import setup_chroma, save_to_chroma
-from app.processing import load_documents, split_text
+from app.db import setup_chroma, save_to_chroma, query_chroma
+from app.processing import load_documents, split_text, build_prompt, ask_gpt
 
 DATA_DIR = "data"
 CHROMA_DIR = "chroma"
@@ -29,6 +30,22 @@ app = FastAPI(lifespan=lifespan)
 async def read_root():
     key = os.environ['OPENAI_API_KEY']
     return {"api-key": key}
+
+
+class ChatRequest(BaseModel):
+    query: str
+
+@app.post("/chat/")
+async def chat(request: ChatRequest):
+    try:
+        print(f"💬 Query received: {request.query}")
+        context_docs = query_chroma(request.query)
+        print(f"📚 Retrieved {len(context_docs)} context docs from Chroma.")
+        prompt = build_prompt(request.query, context_docs)
+        answer = ask_gpt(prompt)
+        return {"query": request.query, "prompt": prompt, "response": answer}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Chat failed: {e}")
 
 
 @app.post("/upload/")
