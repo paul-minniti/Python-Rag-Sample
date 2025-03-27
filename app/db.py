@@ -16,3 +16,12 @@ def save_to_chroma(chunks: list[Document]):
     )
     db.persist()
     print(f"✅ {len(chunks)} chunks saved to Chroma.")
+
+
+def query_chroma(query: str, k: int = 4):
+    db = Chroma(
+        embedding_function=OpenAIEmbeddings(),
+        persist_directory="chroma",
+    )
+    results = db.similarity_search(query, k=k)
+    return results
