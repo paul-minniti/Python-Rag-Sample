@@ -1,0 +1,37 @@
+[project]
+name = "rag-app"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Paul Minniti",email = "pminniti@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi (>=0.115.12,<0.116.0)",
+    "uvicorn (>=0.34.0,<0.35.0)",
+    "python-multipart (>=0.0.20,<0.0.21)",
+    "langchain (>=0.3.21,<0.4.0)",
+    "langchain-community (>=0.3.20,<0.4.0)",
+    "langchain-openai (>=0.3.10,<0.4.0)",
+    "openai (>=1.68.2,<2.0.0)",
+    "python-dotenv (>=1.1.0,<2.0.0)",
+    "tiktoken (>=0.9.0,<0.10.0)",
+    "unstructured[md] (>=0.17.2,<0.18.0)"
+]
+
+[tool.poetry.dependencies]
+python = ">=3.12,<4.0"
+# chroma = ">=0.6.3" installed with pip
+# langchain-chroma = ">0.2.2" installed with pip
+
+
+[tool.poetry]
+packages = [{include = "app", from = "."}]
+
+[tool.poetry.scripts]
+dev = "app.main:run_server"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
